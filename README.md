@@ -10,3 +10,4 @@ Raspberry Pi, Mosquitto, MQTT, Cassandra
 3. RequestBrokerは、PiからpublishされたJSONデータを受信し中身を解析
 4. センサID,日付,時刻,温度を、AWSで稼働するCassandraに登録する
 
+細かいメモは、MyRaspberryPiMemoプロジェクトで。
