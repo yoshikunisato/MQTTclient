@@ -21,7 +21,8 @@ public class RequestBroker implements MqttCallback {
 	// 日付変換
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	// Cassandra ホスト
-	private final String cashost = "ec2-52-193-198-108.ap-northeast-1.compute.amazonaws.com";
+	//private final String cashost = "ec2-52-193-198-108.ap-northeast-1.compute.amazonaws.com";
+	private final String cashost = "cassandra.japanwest.cloudapp.azure.com";
 	// Cassandra キースペース
 	private final String keyspace = "iot";
 	// Cassandra ユーザ
@@ -34,7 +35,8 @@ public class RequestBroker implements MqttCallback {
 	private BoundStatement boundStatement;
 
 	// MQTT brokerホスト
-	private final String broker = "tcp://ec2-52-192-251-45.ap-northeast-1.compute.amazonaws.com:1883";
+	//private final String broker = "tcp://ec2-52-192-251-45.ap-northeast-1.compute.amazonaws.com:1883";
+	private final String broker = "tcp://mqtt.japanwest.cloudapp.azure.com:1883";
 	// MQTT トピック
 	private final String topic = "sens";
 
