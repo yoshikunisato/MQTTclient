@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.UUID;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -48,7 +50,7 @@ public class RequestBroker implements MqttCallback {
 		// QoSレベル
 		int qos = 2;
 		// クライアントの識別子
-		String clientId = this.getClass().getName();
+		String clientId = this.getClass().getName() + "." + UUID.randomUUID().toString();
 
 		try {
 			// Cassandra 接続
@@ -125,7 +127,7 @@ public class RequestBroker implements MqttCallback {
 	 */
 	@Override
 	public void connectionLost(Throwable cause) {
-		log("Connection lost");
+		log("Connection lost: " + cause.toString());
 		System.exit(1);
 	}
 
@@ -148,6 +150,7 @@ public class RequestBroker implements MqttCallback {
 	}
 
 	private static void log(String message) {
-		System.out.println(message);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+		System.out.println(sdf.format(new GregorianCalendar().getTime()) + " " + message);
 	}
 }

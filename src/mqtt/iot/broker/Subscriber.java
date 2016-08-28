@@ -1,5 +1,8 @@
 package mqtt.iot.broker;
 
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
+
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -27,15 +30,15 @@ public class Subscriber {
 		// QoSに沿った耐障害性の高い配信を行うためには、falseにセット
 		connOpts.setCleanSession(false);
 
-		log("Connecting to broker: " + broker);
+		log("Connecting to broker: " + broker + ": clientId [" + clientId + "]");
 		client.connect(connOpts);
 		log("Connected");
 
-		log("Subscribing to topic");
+		log("Subscribing to topic [" + topic + "]");
 		client.subscribe(topic, qos);
 	}
 
-	public void finalze(){
+	public void finalze() {
 		try {
 			client.disconnect();
 		} catch (MqttException e) {
@@ -45,6 +48,7 @@ public class Subscriber {
 	}
 	
 	private static void log(String message) {
-		System.out.println(message);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+		System.out.println(sdf.format(new GregorianCalendar().getTime()) + " " + message);
 	}
 }
