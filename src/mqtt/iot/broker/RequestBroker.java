@@ -41,22 +41,26 @@ public class RequestBroker implements MqttCallback {
 	private final String broker = "tcp://mqtt.japanwest.cloudapp.azure.com:1883";
 	// MQTT トピック
 	private final String topic = "sens";
+	// QoSレベル
+	private final int qos = 2;
+	// クライアントの識別子
+	private String clientId;
+	
+	// MQTTへのサブスクライブ ユーティリティクラス
+	private static Subscriber subscriber = new Subscriber();
 
 	public static void main(String[] args) {
 		new RequestBroker();
 	}
 
 	public RequestBroker() {
-		// QoSレベル
-		int qos = 2;
 		// クライアントの識別子
-		String clientId = this.getClass().getName() + "." + UUID.randomUUID().toString();
+		clientId = this.getClass().getName() + "." + UUID.randomUUID().toString();
 
 		try {
 			// Cassandra 接続
 			initializeCassandraSession();
 			// MQTTにSubscribe
-			Subscriber subscriber = new Subscriber();
 			subscriber.subscribe(this, broker, clientId, topic, qos);
 		} catch (MqttException me) {
 			// Display full details of any exception that occurs
@@ -123,12 +127,31 @@ public class RequestBroker implements MqttCallback {
 	}
 
 	/**
-	 * ブローカーとの接続が失われた時に呼ばれるCallback。本来は再接続のロジックを入れる。
+	 * ブローカーとの接続が失われた時に呼ばれるCallback
+	 * (なぜかAzureは)結構切れるので再接続処理を入れる
 	 */
 	@Override
 	public void connectionLost(Throwable cause) {
-		log("Connection lost: " + cause.toString());
-		System.exit(1);
+		log("ERROR: Connection lost: " + cause.toString());
+		try {
+			// 現在のSubscribeをfinalize
+			subscriber.finalze();
+			subscriber = null;
+			// 再度Subscribe
+			subscriber.subscribe(this, broker, clientId, topic, qos);
+			log("Subscribed to MQTT again");
+		} catch (MqttException me) {
+			log("Re-Subscribe fail. stop execution.");
+			// Display full details of any exception that occurs
+			log("reason " + me.getReasonCode());
+			log("msg " + me.getMessage());
+			log("loc " + me.getLocalizedMessage());
+			log("cause " + me.getCause());
+			log("excep " + me);
+			me.printStackTrace();
+			// 再Subscribeが失敗したらあきらめる
+			System.exit(1);
+		}
 	}
 
 	/**
