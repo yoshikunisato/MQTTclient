@@ -137,9 +137,13 @@ public class RequestBroker implements MqttCallback {
 			// 現在のSubscribeをfinalize
 			subscriber.finalze();
 			subscriber = null;
+
+			// Subscriberを再度生成
+			log("INFO: Try to Subscribe to MQTT again.");
+			subscriber = new Subscriber();
 			// 再度Subscribe
 			subscriber.subscribe(this, broker, clientId, topic, qos);
-			log("Subscribed to MQTT again");
+			log("INFO: done.");
 		} catch (MqttException me) {
 			log("Re-Subscribe fail. stop execution.");
 			// Display full details of any exception that occurs
