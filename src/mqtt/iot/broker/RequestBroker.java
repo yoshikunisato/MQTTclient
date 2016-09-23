@@ -91,9 +91,8 @@ public class RequestBroker implements MqttCallback {
 	 */
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws MqttException {
-		String time = new Timestamp(System.currentTimeMillis()).toString();
 		String payload = new String(message.getPayload());
-		log(time + "\tMessage: " + payload);
+		log("INFO: Message: " + payload.trim());
 
 		// 受信したJSONをオブジェクトにデコード
 		sensData sensdata = JSON.decode(payload, sensData.class);
@@ -121,6 +120,7 @@ public class RequestBroker implements MqttCallback {
 
 			// Insert one record into the users table
 			session.execute(boundStatement);
+			log("INFO: insert to cassandra: complete.");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
