@@ -1,6 +1,5 @@
 package mqtt.iot.broker;
 
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,18 +18,27 @@ import com.datastax.driver.core.Session;
 import mqtt.iot.model.sensData;
 import net.arnx.jsonic.JSON;
 
+/**
+ * MQTTにSubscribeしデバイスからPublishされたJSONデータをCassandraにinsertする
+ * @author yoshikuni
+ *
+ */
 public class RequestBroker implements MqttCallback {
 	// 日付変換
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	// Cassandra ホスト
 	//private final String cashost = "ec2-52-193-198-108.ap-northeast-1.compute.amazonaws.com";
 	private final String cashost = "cassandra.japanwest.cloudapp.azure.com";
+	// Cassandra ポート
+	private final int casport = 9042;
 	// Cassandra キースペース
 	private final String keyspace = "iot";
 	// Cassandra ユーザ
 	private final String cass_user = "iotapp";
 	// Cassandra パスワード
 	private final String cass_pass = "pwdiotapp";
+	// Cassandra セッション管理
+	private CassandraSession csession;
 	// Cassandra セッション
 	private Session session;
 	// Cassandra CQLステートメント
@@ -45,7 +53,6 @@ public class RequestBroker implements MqttCallback {
 	private final int qos = 2;
 	// クライアントの識別子
 	private String clientId;
-	
 	// MQTTへのサブスクライブ ユーティリティクラス
 	private static Subscriber subscriber = new Subscriber();
 
@@ -79,8 +86,8 @@ public class RequestBroker implements MqttCallback {
 	 */
 	private void initializeCassandraSession() {
 		// Session準備
-		CassandraSession cs = new CassandraSession(cashost, keyspace, cass_user, cass_pass);
-		session = cs.getSession();
+		csession = new CassandraSession(cashost, casport, keyspace, cass_user, cass_pass);
+		session = csession.getSession();
 		// PreparedStatement準備(インジェクション防止)
 		PreparedStatement pstmt = session.prepare("insert into sens_by_day(s_id, s_date, s_time, s_val)  values(?, ?, ?, ?);");
 		boundStatement = new BoundStatement(pstmt);
@@ -128,18 +135,40 @@ public class RequestBroker implements MqttCallback {
 
 	/**
 	 * ブローカーとの接続が失われた時に呼ばれるCallback
-	 * (なぜかAzureは)結構切れるので再接続処理を入れる
+	 * Cassandraセッションが切れた場合など、何らかの例外発生時にもcallbackされるみたい
+	 * (なぜかAzureは)結構例外が出るので再接続処理を入れる
+	 * TODO: callback時はデータ欠損するので再初期化後に再登録する仕組みが必要
 	 */
 	@Override
 	public void connectionLost(Throwable cause) {
 		log("ERROR: Connection lost: " + cause.toString());
+		
+		// Cassandra セッションを初期化
 		try {
+			log("INFO: Finalize and connect to Cassandra again.");
+			// 現在のCassandra sessionをfinalize
+			session.close();
+			session = null;
+			csession.finalize();
+			csession = null;
+			// 再度Cassandra sessionを準備
+			initializeCassandraSession();
+			log("INFO: done.");
+		} catch (Exception e) {
+			log("ERROR: Re-initialize cassandra session fail. stop execution.");
+			log("excep "+e.toString());
+			e.printStackTrace();
+			// 失敗したらあきらめる
+			System.exit(1);
+		}
+
+		// MQTT Subscriberを初期化
+		try {
+			log("INFO: Finalize and Subscribe to MQTT again.");
 			// 現在のSubscribeをfinalize
 			subscriber.finalze();
 			subscriber = null;
-
 			// Subscriberを再度生成
-			log("INFO: Try to Subscribe to MQTT again.");
 			subscriber = new Subscriber();
 			// 再度Subscribe
 			subscriber.subscribe(this, broker, clientId, topic, qos);
@@ -153,7 +182,7 @@ public class RequestBroker implements MqttCallback {
 			log("cause " + me.getCause());
 			log("excep " + me);
 			me.printStackTrace();
-			// 再Subscribeが失敗したらあきらめる
+			// 失敗したらあきらめる
 			System.exit(1);
 		}
 	}

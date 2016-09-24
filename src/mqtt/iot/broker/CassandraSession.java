@@ -14,6 +14,7 @@ public class CassandraSession {
 	String cass_user;
 	String cass_pass;
 	String cashost;
+	int casport;
 	String keyspace;
 	Session session;
 
@@ -22,8 +23,9 @@ public class CassandraSession {
 	 * @param _cashost
 	 * @param _keyspace
 	 */
-	public CassandraSession(String _cashost, String _keyspace, String _cass_user, String _cass_pass) {
+	public CassandraSession(String _cashost, int _casport, String _keyspace, String _cass_user, String _cass_pass) {
 		cashost = _cashost;
+		casport = _casport;
 		keyspace = _keyspace;
 		cass_user = _cass_user;
 		cass_pass = _cass_pass;
@@ -41,7 +43,7 @@ public class CassandraSession {
 		try {
 			// Connect to the cluster and keyspace
 			AuthProvider auth = new PlainTextAuthProvider(cass_user, cass_pass);
-			cluster = Cluster.builder().addContactPoint(cashost).withAuthProvider(auth).build();
+			cluster = Cluster.builder().addContactPoint(cashost).withPort(casport).withAuthProvider(auth).build();
 			session = cluster.connect(keyspace);
 		} catch (Exception e) {
 			e.printStackTrace();
