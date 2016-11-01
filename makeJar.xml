@@ -11,6 +11,7 @@
             <manifest>
                 <attribute name="Main-Class" value="mqtt.iot.broker.RequestBroker"/>
                 <attribute name="Class-Path" value="."/>
+                <attribute name="no-route" value="true"/>
             </manifest>
             <fileset dir="${dir.workspace}/MQTTclient/bin"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/org.eclipse.paho.client.mqttv3-1.1.0.jar"/>
