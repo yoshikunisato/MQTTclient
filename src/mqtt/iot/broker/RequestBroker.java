@@ -28,7 +28,8 @@ public class RequestBroker implements MqttCallback {
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	// Cassandra ホスト
 	//private final String cashost = "ec2-52-193-198-108.ap-northeast-1.compute.amazonaws.com";
-	private final String cashost = "cassandra.japanwest.cloudapp.azure.com";
+	//private final String cashost = "cassandra.japanwest.cloudapp.azure.com";
+	private final String cashost = "133.162.209.156";
 	// Cassandra ポート
 	private final int casport = 9042;
 	// Cassandra キースペース
@@ -46,7 +47,8 @@ public class RequestBroker implements MqttCallback {
 
 	// MQTT brokerホスト
 	//private final String broker = "tcp://ec2-52-192-251-45.ap-northeast-1.compute.amazonaws.com:1883";
-	private final String broker = "tcp://mqtt.japanwest.cloudapp.azure.com:1883";
+	//private final String broker = "tcp://mqtt.japanwest.cloudapp.azure.com:1883";
+	private final String broker = "tcp://133.162.209.156:1883";
 	// MQTT トピック
 	private final String topic = "sens";
 	// QoSレベル

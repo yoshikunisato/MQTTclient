@@ -7,7 +7,7 @@
     <property name="dir.workspace" value="C:/WorkspaceIoT"/>
     <property name="dir.jarfile" value="${dir.buildfile}"/>
     <target name="create_run_jar">
-        <jar destfile="C:/tmp/RequestBroker.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="RequestBroker.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="mqtt.iot.broker.RequestBroker"/>
                 <attribute name="Class-Path" value="."/>

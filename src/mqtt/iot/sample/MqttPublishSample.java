@@ -16,7 +16,8 @@ public class MqttPublishSample {
         // QoSレベル(0〜2。2が一番確実な伝送を実現する)
         int qos             = 2;
         // ブローカー。デフォルトでポート1883を使う。
-        String broker       = "tcp://ec2-52-192-251-45.ap-northeast-1.compute.amazonaws.com:1883";
+        //String broker       = "tcp://ec2-52-192-251-45.ap-northeast-1.compute.amazonaws.com:1883";
+        String broker       = "tcp://133.162.209.156:1883";
         // クライアントの識別子
         String clientId     = "Java Publish Client";
          

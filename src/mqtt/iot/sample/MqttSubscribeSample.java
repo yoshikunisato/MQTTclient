@@ -17,7 +17,8 @@ public class MqttSubscribeSample implements MqttCallback {
 		// QoSレベル
 		int qos = 2;
 		// ブローカー
-		String broker = "tcp://ec2-52-192-251-45.ap-northeast-1.compute.amazonaws.com:1883";
+		//String broker = "tcp://ec2-52-192-251-45.ap-northeast-1.compute.amazonaws.com:1883";
+		String broker = "tcp://133.162.209.156:1883";
 		// クライアントの識別子
 		String clientId = "Java Subscribe Client";
 		// トピックはPublisherとSubscriberで同一である必要があります。
