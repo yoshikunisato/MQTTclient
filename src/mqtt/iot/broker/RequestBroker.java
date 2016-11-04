@@ -24,8 +24,8 @@ import net.arnx.jsonic.JSON;
  *
  */
 public class RequestBroker implements MqttCallback {
-	// 日付変換
-	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	// 日付変換 timezone対応
+	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
 	// Cassandra ホスト
 	//private final String cashost = "ec2-52-193-198-108.ap-northeast-1.compute.amazonaws.com";
 	//private final String cashost = "cassandra.japanwest.cloudapp.azure.com";

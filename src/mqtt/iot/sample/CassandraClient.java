@@ -20,7 +20,8 @@ public class CassandraClient {
 	}
 
 	public CassandraClient() {
-		String cashost = "ec2-52-193-198-108.ap-northeast-1.compute.amazonaws.com";
+//		String cashost = "ec2-52-193-198-108.ap-northeast-1.compute.amazonaws.com";
+		String cashost = "133.162.209.156";
 		String keyspace = "iot";
 
 		Cluster cluster;
@@ -71,8 +72,8 @@ public class CassandraClient {
 			BoundStatement boundStatement = new BoundStatement(pstmt);
 
 			// Date型変換
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			Date formatDate = sdf.parse("2016-07-25 12:45:25");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
+			Date formatDate = sdf.parse("2016-07-25 10:00:00JST");
 
 			// Bind
 			boundStatement.bind("s001.home", "2016-07-25", formatDate, "28.24");
@@ -89,7 +90,7 @@ public class CassandraClient {
 	private void select(Session session) {
 
 		// Use select to get the user we just entered
-		ResultSet results = session.execute("SELECT * FROM sens_by_day");
+		ResultSet results = session.execute("SELECT * FROM sens_by_day where s_id='s001.home' and s_date='2016-07-25'");
 		for (Row row : results) {
 			// System.out.format("%s %d\n", row.getString("s_id"),
 			// row.getDecimal("s_val"));
